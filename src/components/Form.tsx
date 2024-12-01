@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useForm, SubmitHandler, useWatch } from "react-hook-form";
 import ProgressBar from "./ProgressBar";
-import SubmittedDataTable from "./DataTable";
 import apiResponses from "../api/apiResponses";
+import Sidebar from "./Sidebar";
 
 // Types for form structure and data
 interface FormField {
@@ -27,6 +27,7 @@ const Form: React.FC = () => {
   });
   const [progress, setProgress] = useState<number>(0);
   const [message, setMessage] = useState<string>("");
+  const [isSidebarVisible, setIsSidebarVisible] = useState<boolean>(false);
 
   const {
     register,
@@ -47,13 +48,13 @@ const Form: React.FC = () => {
   }, [formType, reset]);
 
   // Calculate progress based on filled fields
-    const calculateProgress = () => {
-      if (!formStructure.length) return;
-      const filledFields = Object.keys(formValues).filter(
-        (key) => formValues[key] !== undefined && formValues[key] !== ""
-      );
-      setProgress((filledFields.length / formStructure.length) * 100);
-    };
+  const calculateProgress = () => {
+    if (!formStructure.length) return;
+    const filledFields = Object.keys(formValues).filter(
+      (key) => formValues[key] !== undefined && formValues[key] !== ""
+    );
+    setProgress((filledFields.length / formStructure.length) * 100);
+  };
 
   // Form submission
   const onSubmit: SubmitHandler<FormData> = (data) => {
@@ -65,8 +66,26 @@ const Form: React.FC = () => {
     reset({});
   };
 
+  const handleEdit = (index: number, updatedData: Record<string, string | number>) => {
+    const updatedSubmittedData = [...submittedData[formType]];
+    updatedSubmittedData[index] = updatedData;
+    setSubmittedData((prevData) => ({
+      ...prevData,
+      [formType]: updatedSubmittedData,
+    }));
+  };
+
+  const handleDelete = (index: number) => {
+    const updatedSubmittedData = submittedData[formType].filter((_, i) => i !== index);
+    setSubmittedData((prevData) => ({
+      ...prevData,
+      [formType]: updatedSubmittedData,
+    }));
+  };
+
   return (
-    <div className="max-w-2xl m-auto p-4 bg-white shadow-md rounded-md">
+    <div className="relative max-w-2xl mx-auto p-4 bg-white shadow-md rounded-md">
+      <h2 className="text-2xl font-bold mb-4">Dynamic Form</h2>
 
       {/* Form Type Dropdown */}
       <div className="mb-4">
@@ -129,28 +148,21 @@ const Form: React.FC = () => {
       {/* Message */}
       {message && <p className="mt-4 text-green-500">{message}</p>}
 
-      {/* Submitted Data Table */}
-      <SubmittedDataTable
+      {/* Sidebar Button */}
+      <button
+        className="fixed bottom-4 right-4 bg-blue-500 text-white p-2 rounded-full shadow-lg"
+        onClick={() => setIsSidebarVisible(true)}
+      >
+        View Submitted Data
+      </button>
+
+      {/* Sidebar */}
+      <Sidebar
+        isVisible={isSidebarVisible}
+        onClose={() => setIsSidebarVisible(false)}
         data={submittedData[formType]}
-        onEdit={(index, updatedData) => {
-          const updatedSubmittedData = [...submittedData[formType]];
-          updatedSubmittedData[index] = updatedData;
-          setSubmittedData((prevData) => ({
-            ...prevData,
-            [formType]: updatedSubmittedData,
-          }));
-          setMessage("Changes saved successfully!");
-        }}
-        onDelete={(index) => {
-          const updatedSubmittedData = submittedData[formType].filter(
-            (_, i) => i !== index
-          );
-          setSubmittedData((prevData) => ({
-            ...prevData,
-            [formType]: updatedSubmittedData,
-          }));
-          setMessage("Entry deleted successfully!");
-        }}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
       />
     </div>
   );
