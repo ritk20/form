@@ -47,13 +47,13 @@ const Form: React.FC = () => {
   }, [formType, reset]);
 
   // Calculate progress based on filled fields
-  useEffect(() => {
-    if (!formStructure.length) return;
-    const filledFields = Object.keys(formValues).filter(
-      (key) => formValues[key] !== undefined && formValues[key] !== ""
-    );
-    setProgress((filledFields.length / formStructure.length) * 100);
-  }, [formValues, formStructure]);
+    const calculateProgress = () => {
+      if (!formStructure.length) return;
+      const filledFields = Object.keys(formValues).filter(
+        (key) => formValues[key] !== undefined && formValues[key] !== ""
+      );
+      setProgress((filledFields.length / formStructure.length) * 100);
+    };
 
   // Form submission
   const onSubmit: SubmitHandler<FormData> = (data) => {
@@ -66,8 +66,7 @@ const Form: React.FC = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4 bg-white shadow-md rounded-md">
-      <h2 className="text-2xl font-bold mb-4">Dynamic Form</h2>
+    <div className="max-w-2xl m-auto p-4 bg-white shadow-md rounded-md">
 
       {/* Form Type Dropdown */}
       <div className="mb-4">
@@ -94,6 +93,7 @@ const Form: React.FC = () => {
               <select
                 className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                 {...register(field.name, { required: field.required })}
+                onBlur={calculateProgress}
               >
                 <option value="">Select</option>
                 {field.options?.map((option) => (
@@ -107,6 +107,7 @@ const Form: React.FC = () => {
                 type={field.type}
                 className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                 {...register(field.name, { required: field.required })}
+                onBlur={calculateProgress}
               />
             )}
             {errors[field.name] && (

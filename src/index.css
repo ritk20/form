@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  body {
+    font-family: __Roboto_a48f64, __Roboto_Fallback_a48f64, system-ui, arial;
+    background: linear-gradient(to right, #172554, #6b21a8);
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+}
