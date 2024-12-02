@@ -12,7 +12,7 @@ const SubmittedDataTable: React.FC<SubmittedDataTableProps> = ({
   onDelete,
 }) => {
   return (
-    <div className="mt-8">
+    <div className="mt-8 overflow-x-auto">
       <h3 className="text-xl font-bold mb-4">Submitted Data</h3>
       {data.length > 0 ? (
         <table className="min-w-full bg-white border border-gray-300">

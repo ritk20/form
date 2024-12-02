@@ -184,11 +184,13 @@ const Form: React.FC = () => {
       </form>
 
       {/* Sidebar Button */}
-      <button
-        className="fixed top-4 right-4 bg-blue-500 text-white p-2 px-3 rounded-full shadow-lg"
+      <button  
+        className="fixed top-4 right-4 bg-blue-500 text-white p-2 px-3 rounded-full shadow-lg sm:text-base text-xs"
         onClick={() => setIsSidebarVisible(true)}
       >
-        View Submitted Data
+        <span className="hidden lg:inline">View Submitted Data</span>
+        <span className="hidden sm:inline lg:hidden">Data</span>
+        <span className="inline sm:hidden">D</span>
       </button>
 
       {/* Sidebar */}
