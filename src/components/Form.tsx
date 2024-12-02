@@ -3,6 +3,7 @@ import { useForm, SubmitHandler, useWatch } from "react-hook-form";
 import ProgressBar from "./ProgressBar";
 import apiResponses from "../api/apiResponses";
 import Sidebar from "./Sidebar";
+import Alert from "./Alert";
 
 // Types for form structure and data
 interface FormField {
@@ -29,6 +30,7 @@ const Form: React.FC = () => {
   const [message, setMessage] = useState<string>("");
   const [isSidebarVisible, setIsSidebarVisible] = useState<boolean>(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
 
   const {
     register,
@@ -97,6 +99,18 @@ const Form: React.FC = () => {
     }));
   };
 
+  useEffect(() => {
+    if (message) {
+      setShowAlert(true);
+    }
+  }, [message]);
+
+  const handleCloseAlert = () => {
+    setShowAlert(false);
+    setMessage('');
+  };
+
+
   // if(isSidebarVisible) return null;
 
   return (
@@ -109,7 +123,7 @@ const Form: React.FC = () => {
       <div className="mb-4">
         <label className="block text-gray-700">Select Form Type:</label>
         <select
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+          className="mt-1 block w-full p-2 border border-gray-300 rounded-md box-border"
           value={formType}
           onChange={(e) => setFormType(e.target.value)}
         >
@@ -152,16 +166,22 @@ const Form: React.FC = () => {
             )}
           </div>
         ))}
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
-        >
-          {editIndex !== null ? "Update" : "Submit"}
-        </button>
+        <div className="relative">
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
+          >
+            {editIndex !== null ? "Update" : "Submit"}
+          </button>
+          {showAlert && (
+            <Alert
+              message={message}
+              duration={2000}
+              onClose={handleCloseAlert}
+            />
+          )}
+        </div>
       </form>
-
-      {/* Message */}
-      {message && <p className="mt-4 text-green-500">{message}</p>}
 
       {/* Sidebar Button */}
       <button
