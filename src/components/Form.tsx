@@ -100,12 +100,10 @@ const Form: React.FC = () => {
   // if(isSidebarVisible) return null;
 
   return (
-    <div className="relative max-w-2xl w-full mx-auto p-4 bg-white shadow-md rounded-md overflow-y-auto hide-scrollbar">
+    <div className="relative max-w-2xl w-full mx-auto px-4 pb-4 bg-white shadow-md rounded-md overflow-y-auto hide-scrollbar">
 
       {/* Progress Bar */}
-      <div className="relative top-0 left-0 right-0 z-10">
-        <ProgressBar progress={progress} />
-      </div>
+      <ProgressBar progress={progress} />
 
       {/* Form Type Dropdown */}
       <div className="mb-4">
