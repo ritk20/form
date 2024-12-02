@@ -28,6 +28,7 @@ const Form: React.FC = () => {
   const [progress, setProgress] = useState<number>(0);
   const [message, setMessage] = useState<string>("");
   const [isSidebarVisible, setIsSidebarVisible] = useState<boolean>(false);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
 
   const {
     register,
@@ -35,6 +36,7 @@ const Form: React.FC = () => {
     control,
     formState: { errors },
     reset,
+    setValue,
   } = useForm<FormData>();
 
   const formValues = useWatch({ control });
@@ -45,6 +47,7 @@ const Form: React.FC = () => {
     reset({});
     setProgress(0);
     setMessage("");
+    setEditIndex(null);
   }, [formType, reset]);
 
   // Calculate progress based on filled fields
@@ -58,21 +61,32 @@ const Form: React.FC = () => {
 
   // Form submission
   const onSubmit: SubmitHandler<FormData> = (data) => {
-    setSubmittedData((prevData) => ({
-      ...prevData,
-      [formType]: [...prevData[formType], data],
-    }));
-    setMessage("Form submitted successfully!");
+    if (editIndex !== null) { // Check if editing
+      const updatedSubmittedData = [...submittedData[formType]];
+      updatedSubmittedData[editIndex] = data;
+      setSubmittedData((prevData) => ({
+        ...prevData,
+        [formType]: updatedSubmittedData,
+      }));
+      setMessage("Form updated successfully!");
+      setEditIndex(null); // Reset edit index after update
+    } else {
+      setSubmittedData((prevData) => ({
+        ...prevData,
+        [formType]: [...prevData[formType], data],
+      }));
+      setMessage("Form submitted successfully!");
+    }
     reset({});
   };
 
-  const handleEdit = (index: number, updatedData: Record<string, string | number>) => {
-    const updatedSubmittedData = [...submittedData[formType]];
-    updatedSubmittedData[index] = updatedData;
-    setSubmittedData((prevData) => ({
-      ...prevData,
-      [formType]: updatedSubmittedData,
-    }));
+  const handleEdit = (index: number, data: FormData) => {
+    setEditIndex(index); 
+    setMessage("");
+    Object.keys(data).forEach((key) => {
+      setValue(key, data[key]); 
+    });
+    setIsSidebarVisible(false);
   };
 
   const handleDelete = (index: number) => {
@@ -83,9 +97,15 @@ const Form: React.FC = () => {
     }));
   };
 
+  // if(isSidebarVisible) return null;
+
   return (
-    <div className="relative max-w-2xl mx-auto p-4 bg-white shadow-md rounded-md">
-      <h2 className="text-2xl font-bold mb-4">Dynamic Form</h2>
+    <div className="relative max-w-2xl w-full mx-auto p-4 bg-white shadow-md rounded-md overflow-y-auto hide-scrollbar">
+
+      {/* Progress Bar */}
+      <div className="relative top-0 left-0 right-0 z-10">
+        <ProgressBar progress={progress} />
+      </div>
 
       {/* Form Type Dropdown */}
       <div className="mb-4">
@@ -138,19 +158,16 @@ const Form: React.FC = () => {
           type="submit"
           className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
         >
-          Submit
+          {editIndex !== null ? "Update" : "Submit"}
         </button>
       </form>
-
-      {/* Progress Bar */}
-      <ProgressBar progress={progress} />
 
       {/* Message */}
       {message && <p className="mt-4 text-green-500">{message}</p>}
 
       {/* Sidebar Button */}
       <button
-        className="fixed bottom-4 right-4 bg-blue-500 text-white p-2 rounded-full shadow-lg"
+        className="fixed top-4 right-4 bg-blue-500 text-white p-2 px-3 rounded-full shadow-lg"
         onClick={() => setIsSidebarVisible(true)}
       >
         View Submitted Data
