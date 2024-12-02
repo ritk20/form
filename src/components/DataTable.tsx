@@ -19,24 +19,24 @@ const SubmittedDataTable: React.FC<SubmittedDataTableProps> = ({
           <thead>
             <tr className="bg-gray-200">
               {Object.keys(data[0]).map((key) => (
-                <th key={key} className="py-2 px-4 border-b border-gray-300 text-left">
+                <th key={key} className="py-2 px-4 border-b border-gray-300 text-center">
                   {key}
                 </th>
               ))}
-              <th className="py-2 px-4 border-b border-gray-300 text-left">Actions</th>
+              <th className="py-2 px-4 border-b border-gray-300 text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
             {data.map((row, index) => (
               <tr key={index} className="hover:bg-gray-100">
                 {Object.values(row).map((value, i) => (
-                  <td key={i} className="py-2 px-4 border-b border-gray-300">
+                  <td key={i} className="py-2 px-4 border-b border-gray-300 text-center">
                     {value}
                   </td>
                 ))}
-                <td className="py-2 px-4 border-b border-gray-300">
+                <td className="py-2 px-4 text-center border-b border-gray-300">
                   <button
-                    className="text-blue-500 hover:underline mr-2"
+                    className="text-blue-500 hover:underline mr-3"
                     onClick={() => onEdit(index, row)}
                   >
                     Edit
