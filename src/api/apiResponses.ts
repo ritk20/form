@@ -13,6 +13,9 @@ interface FormStructure {
 const apiResponses: Record<string, FormStructure> = {
   "User Information": {
     fields: [
+      { name: "username", type: "text", label: "Username", required: true },
+      { name: "email", type: "email", label: "Email", required: true },
+      { name: "phoneNumber", type: "text", label: "Phone Number", required: false },
       { name: "firstName", type: "text", label: "First Name", required: true },
       { name: "lastName", type: "text", label: "Last Name", required: true },
       { name: "age", type: "number", label: "Age", required: false },
@@ -40,6 +43,22 @@ const apiResponses: Record<string, FormStructure> = {
       { name: "cardholderName", type: "text", label: "Cardholder Name", required: true },
     ],
   },
+  "Employment Information": {
+    fields: [
+      { name: "companyName", type: "text", label: "Company Name", required: true },
+      { name: "jobTitle", type: "text", label: "Job Title", required: true },
+      { name: "yearsExperience", type: "number", label: "Years of Experience", required: false },
+      { name: "employmentType", type: "dropdown", label: "Employment Type", options: ["Full-time", "Part-time", "Contract"], required: true },
+    ],
+    },
+    "Emergency Contact": {
+    fields: [
+      { name: "contactName", type: "text", label: "Contact Name", required: true },
+      { name: "relationship", type: "text", label: "Relationship", required: true },
+      { name: "contactNumber", type: "text", label: "Contact Number", required: true },
+      { name: "alternateNumber", type: "text", label: "Alternate Number", required: false },
+    ],
+    }
 };
 
 export default apiResponses;
