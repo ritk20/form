@@ -63,7 +63,7 @@ const Form: React.FC = () => {
 
   // Form submission
   const onSubmit: SubmitHandler<FormData> = (data) => {
-    if (editIndex !== null) { // Check if editing
+    if (editIndex !== null) {
       const updatedSubmittedData = [...submittedData[formType]];
       updatedSubmittedData[editIndex] = data;
       setSubmittedData((prevData) => ({
@@ -71,7 +71,7 @@ const Form: React.FC = () => {
         [formType]: updatedSubmittedData,
       }));
       setMessage("Form updated successfully!");
-      setEditIndex(null); // Reset edit index after update
+      setEditIndex(null);
     } else {
       setSubmittedData((prevData) => ({
         ...prevData,
@@ -79,7 +79,7 @@ const Form: React.FC = () => {
       }));
       setMessage("Form submitted successfully!");
     }
-    reset({}); // Clear the form after submission
+    reset();
   };
 
   const handleEdit = (index: number, data: FormData) => {
