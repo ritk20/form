@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import SubmittedDataTable from "./DataTable";
 
 interface SidebarProps {
@@ -9,22 +9,46 @@ interface SidebarProps {
   onDelete: (index: number) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isVisible, onClose, data, onEdit, onDelete }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  isVisible,
+  onClose,
+  data,
+  onEdit,
+  onDelete,
+}) => {
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    if (isVisible) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isVisible, onClose]);
+
   if (!isVisible) return null;
 
   return (
-    <div className="fixed top-0 right-0 w-4/5 h-full bg-white shadow-lg z-50 p-4 overflow-auto">
+    <div ref={sidebarRef} className="fixed top-0 right-0 w-4/5 h-full bg-gradient-to-r from-slate-300 to-slate-100 drop-shadow-2xl z-50">
       <button
-        className="absolute top-4 right-4 text-gray-700"
+        className="absolute top-4 right-4 text-gray-700 hover:text-gray-900"
         onClick={onClose}
       >
         Close
       </button>
-      <SubmittedDataTable
-        data={data}
-        onEdit={onEdit}
-        onDelete={onDelete}
-      />
+      <div className="p-4">
+        <SubmittedDataTable data={data} onEdit={onEdit} onDelete={onDelete} />
+      </div>
     </div>
   );
 };
