@@ -18,19 +18,25 @@ interface FormData {
   [key: string]: string | number;
 }
 
-const Form: React.FC = () => {
-  const [formType, setFormType] = useState<string>("User Information");
-  const [formStructure, setFormStructure] = useState<FormField[]>([]);
-  const [submittedData, setSubmittedData] = useState<Record<string, FormData[]>>({
-    "User Information": [],
-    "Address Information": [],
-    "Payment Information": [],
+// Function to initialize submittedData state
+const initializeSubmittedData = () => {
+  const initialData: Record<string, FormData[]> = {};
+  Object.keys(apiResponses).forEach((key) => {
+    initialData[key] = [];
   });
+  return initialData;
+};
+
+const Form: React.FC = () => {
+  const [formType, setFormType] = useState<string>(Object.keys(apiResponses)[0]);
+  const [formStructure, setFormStructure] = useState<FormField[]>([]);
+  const [submittedData, setSubmittedData] = useState<Record<string, FormData[]>>(initializeSubmittedData());
   const [progress, setProgress] = useState<number>(0);
   const [message, setMessage] = useState<string>("");
   const [isSidebarVisible, setIsSidebarVisible] = useState<boolean>(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [showAlert, setShowAlert] = useState(false);
+  const [error, setError] = useState<string>("");
 
   const {
     register,
@@ -43,11 +49,25 @@ const Form: React.FC = () => {
 
   // Fetch form structure when form type changes
   useEffect(() => {
-    setFormStructure(apiResponses[formType]?.fields || []);
-    reset({});
-    setProgress(0);
-    setMessage("");
-    setEditIndex(null);
+    const fetchFormStructure = async () => {
+      try {
+        const response = await apiResponses[formType];
+        if (response) {
+          setFormStructure(response.fields || []);
+          reset({});
+          setProgress(0);
+          setMessage("");
+          setEditIndex(null);
+          setError("");
+        } else {
+          throw new Error("Form structure not found");
+        }
+      } catch {
+        setError("Error fetching form structure");
+      }
+    };
+
+    fetchFormStructure();
   }, [formType, reset]);
 
   // Calculate progress based on filled fields
@@ -62,7 +82,7 @@ const Form: React.FC = () => {
   }, [watch]);
 
   // Form submission
-  const onSubmit: SubmitHandler<FormData> = (data) => {
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     if (editIndex !== null) {
       const updatedSubmittedData = [...submittedData[formType]];
       updatedSubmittedData[editIndex] = data;
@@ -70,7 +90,7 @@ const Form: React.FC = () => {
         ...prevData,
         [formType]: updatedSubmittedData,
       }));
-      setMessage("Form updated successfully!");
+      setMessage("Changes saved successfully.");
       setEditIndex(null);
     } else {
       setSubmittedData((prevData) => ({
@@ -97,6 +117,7 @@ const Form: React.FC = () => {
       ...prevData,
       [formType]: updatedSubmittedData,
     }));
+    setMessage("Entry deleted successfully.");
   };
 
   useEffect(() => {
@@ -110,12 +131,8 @@ const Form: React.FC = () => {
     setMessage('');
   };
 
-
-  // if(isSidebarVisible) return null;
-
   return (
     <div className="relative max-w-2xl w-full mx-auto px-4 pb-4 bg-white shadow-md rounded-md overflow-y-auto hide-scrollbar">
-
       {/* Progress Bar */}
       <ProgressBar progress={progress} />
 
@@ -134,6 +151,16 @@ const Form: React.FC = () => {
           ))}
         </select>
       </div>
+
+      {/* Error Alert */}
+      {error && (
+        <Alert
+          message={error}
+          duration={2000}
+          onClose={() => setError("")}
+          type="error"
+        />
+      )}
 
       {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -179,6 +206,7 @@ const Form: React.FC = () => {
               message={message}
               duration={2000}
               onClose={handleCloseAlert}
+              type="success"
             />
           )}
         </div>
