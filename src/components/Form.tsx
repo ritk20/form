@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useForm, SubmitHandler, useWatch } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import ProgressBar from "./ProgressBar";
 import apiResponses from "../api/apiResponses";
 import Sidebar from "./Sidebar";
@@ -35,13 +35,11 @@ const Form: React.FC = () => {
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors },
     reset,
     setValue,
+    watch,
   } = useForm<FormData>();
-
-  const formValues = useWatch({ control });
 
   // Fetch form structure when form type changes
   useEffect(() => {
@@ -53,13 +51,15 @@ const Form: React.FC = () => {
   }, [formType, reset]);
 
   // Calculate progress based on filled fields
-  const calculateProgress = () => {
-    if (!formStructure.length) return;
-    const filledFields = Object.keys(formValues).filter(
-      (key) => formValues[key] !== undefined && formValues[key] !== ""
-    );
-    setProgress((filledFields.length / formStructure.length) * 100);
-  };
+  useEffect(() => {
+    const subscription = watch((values) => {
+      const totalFields = Object.keys(values).length;
+      const filledFields = Object.values(values).filter(value => value !== undefined && value !== "").length;
+      const progress = totalFields > 0 ? (filledFields / totalFields) * 100 : 0;
+      setProgress(progress);
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
 
   // Form submission
   const onSubmit: SubmitHandler<FormData> = (data) => {
@@ -79,7 +79,7 @@ const Form: React.FC = () => {
       }));
       setMessage("Form submitted successfully!");
     }
-    reset({});
+    reset({}); // Clear the form after submission
   };
 
   const handleEdit = (index: number, data: FormData) => {
@@ -139,12 +139,14 @@ const Form: React.FC = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         {formStructure.map((field) => (
           <div key={field.name} className="mb-4">
-            <label className="block text-gray-700">{field.label}:</label>
+            <label className="block text-gray-700">
+              {field.label}
+              {field.required && <span className="text-red-500"> *</span>}
+            </label>
             {field.type === "dropdown" ? (
               <select
                 className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                 {...register(field.name, { required: field.required })}
-                onBlur={calculateProgress}
               >
                 <option value="">Select</option>
                 {field.options?.map((option) => (
@@ -158,7 +160,6 @@ const Form: React.FC = () => {
                 type={field.type}
                 className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                 {...register(field.name, { required: field.required })}
-                onBlur={calculateProgress}
               />
             )}
             {errors[field.name] && (
@@ -184,13 +185,13 @@ const Form: React.FC = () => {
       </form>
 
       {/* Sidebar Button */}
-      <button  
+      <button
         className="fixed top-4 right-4 bg-blue-500 text-white p-2 px-3 rounded-full shadow-lg sm:text-base text-xs"
         onClick={() => setIsSidebarVisible(true)}
       >
         <span className="hidden lg:inline">View Submitted Data</span>
-        <span className="hidden sm:inline lg:hidden">Data</span>
-        <span className="inline sm:hidden">D</span>
+        <span className="hidden md:inline lg:hidden">Data</span>
+        <span className="inline md:hidden">D</span>
       </button>
 
       {/* Sidebar */}
