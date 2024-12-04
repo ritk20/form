@@ -29,7 +29,13 @@ const apiResponses: Record<string, FormStructure> = {
         name: "state",
         type: "dropdown",
         label: "State",
-        options: ["California", "Texas", "New York"],
+        options: [
+          "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+          "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+          "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
+          "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+          "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
+        ],
         required: true,
       },
       { name: "zipCode", type: "text", label: "Zip Code", required: false },
@@ -50,15 +56,15 @@ const apiResponses: Record<string, FormStructure> = {
       { name: "yearsExperience", type: "number", label: "Years of Experience", required: false },
       { name: "employmentType", type: "dropdown", label: "Employment Type", options: ["Full-time", "Part-time", "Contract"], required: true },
     ],
-    },
-    "Emergency Contact": {
+  },
+  "Emergency Contact": {
     fields: [
       { name: "contactName", type: "text", label: "Contact Name", required: true },
       { name: "relationship", type: "text", label: "Relationship", required: true },
       { name: "contactNumber", type: "text", label: "Contact Number", required: true },
       { name: "alternateNumber", type: "text", label: "Alternate Number", required: false },
     ],
-    }
+  }
 };
 
 export default apiResponses;
