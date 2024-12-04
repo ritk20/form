@@ -12,8 +12,8 @@ const Alert: React.FC<AlertProps> = ({ message, duration, onClose, type }) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setProgress((prev) => prev - 100 / (duration / 30));
-    }, 10);
+      setProgress((prev) => prev - 100 / (duration / 150));
+    }, 130);
 
     const timeout = setTimeout(() => {
       onClose();
