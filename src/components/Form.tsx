@@ -54,7 +54,7 @@ const Form: React.FC = () => {
         const response = await apiResponses[formType];
         if (response) {
           setFormStructure(response.fields || []);
-          reset({});
+          reset();
           setProgress(0);
           setMessage("");
           setEditIndex(null);

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import SubmittedDataTable from "./DataTable";
 
 interface SidebarProps {
@@ -18,13 +18,13 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const sidebarRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
-        onClose();
-      }
-    };
+  const handleClickOutside = useCallback((event: MouseEvent) => {
+    if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+      onClose();
+    }
+  }, [onClose]);
 
+  useEffect(() => {
     if (isVisible) {
       document.addEventListener("mousedown", handleClickOutside);
     } else {
@@ -34,7 +34,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isVisible, onClose]);
+  }, [isVisible, handleClickOutside]);
 
   if (!isVisible) return null;
 
@@ -53,4 +53,4 @@ const Sidebar: React.FC<SidebarProps> = ({
   );
 };
 
-export default Sidebar;
+export default React.memo(Sidebar);

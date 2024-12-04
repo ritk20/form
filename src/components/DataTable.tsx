@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 
 interface SubmittedDataTableProps {
   data: Array<Record<string, string | number>>;
@@ -11,6 +11,14 @@ const SubmittedDataTable: React.FC<SubmittedDataTableProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const handleEdit = useCallback((index: number, row: Record<string, string | number>) => {
+    onEdit(index, row);
+  }, [onEdit]);
+
+  const handleDelete = useCallback((index: number) => {
+    onDelete(index);
+  }, [onDelete]);
+
   return (
     <div className="mt-8 overflow-x-auto">
       <h3 className="text-xl font-bold mb-4">Submitted Data</h3>
@@ -37,13 +45,13 @@ const SubmittedDataTable: React.FC<SubmittedDataTableProps> = ({
                 <td className="py-2 px-4 text-center border-b border-gray-300">
                   <button
                     className="text-blue-500 hover:underline mr-3"
-                    onClick={() => onEdit(index, row)}
+                    onClick={() => handleEdit(index, row)}
                   >
                     Edit
                   </button>
                   <button
                     className="text-red-500 hover:underline"
-                    onClick={() => onDelete(index)}
+                    onClick={() => handleDelete(index)}
                   >
                     Delete
                   </button>
@@ -59,4 +67,4 @@ const SubmittedDataTable: React.FC<SubmittedDataTableProps> = ({
   );
 };
 
-export default SubmittedDataTable;
+export default React.memo(SubmittedDataTable);
